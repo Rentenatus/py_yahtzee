@@ -10,10 +10,11 @@ from yahtzee.yahtzee_game import YahtzeeGame
 from yahtzee.yahtzee_logger import TextLogger
 
 class Scheduler:
-    def __init__(self, players):
+
+    def __init__(self, players, logger_class = TextLogger):
         self.players = players
-        self.games =  {player.name:YahtzeeGame() for player in players}
-        self.loggers = {player.name:TextLogger() for player in players}
+        self.games = {player.name: YahtzeeGame() for player in players}
+        self.loggers = {player.name: logger_class() for player in players}
 
     def start(self):
         for round_number in range(13):  # 13 Kategorien pro Spieler
@@ -50,7 +51,7 @@ class Scheduler:
                 logger.log_category(category, game.scorecard[category])
 
         # Final scorecards
-        print("\n🏁 Final Results:")
+        next(iter(self.loggers.values())).print_final_results()
         for player in self.players:
             game = self.games[player.name]
             logger = self.loggers[player.name]

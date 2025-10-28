@@ -51,14 +51,22 @@ class YahtzeeGame:
         upper_total = sum(self.scorecard[k] for k in upper_keys if self.scorecard[k] is not None)
         return 35 if upper_total >= 63 else 0
 
-    def calculate_total_score(self):
+    def calculate_upper_score(self):
         upper_keys = ["ones", "twos", "threes", "fours", "fives", "sixes"]
+        upper_total = sum(self.scorecard[k] for k in upper_keys if self.scorecard[k] is not None)
+        return upper_total
+
+    def calculate_lower_score(self):
         lower_keys = [
             "three_of_a_kind", "four_of_a_kind", "full_house",
             "small_straight", "large_straight", "yahtzee", "chance"
         ]
-        upper_total = sum(self.scorecard[k] for k in upper_keys if self.scorecard[k] is not None)
         lower_total = sum(self.scorecard[k] for k in lower_keys if self.scorecard[k] is not None)
+        return   lower_total
+
+    def calculate_total_score(self):
+        upper_total = self.calculate_upper_score()
+        lower_total = self.calculate_lower_score()
         bonus = self.calculate_upper_bonus()
         return upper_total + bonus + lower_total
 
