@@ -9,7 +9,7 @@ https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 
 import pandas as pd
 from yahtzee.yahtzee_logger import PandasLogger
-from yahtzee.yahtzee_player import ChaosPlayer
+from yahtzee.yahtzee_player import ChaosPlayer, AlwaysKeepPlayer
 from yahtzee.yahtzee_scheduler import Scheduler
 
 
@@ -36,7 +36,7 @@ def run_batch_games(players, logger_class, num_games=1000):
 
 
 def main():
-    players = [ChaosPlayer("ChaosBot")]
+    players = [ChaosPlayer("ChaosBot"),AlwaysKeepPlayer("AlwaysKeepBot")]
     df = run_batch_games(players, logger_class=PandasLogger, num_games=1000)
 
     print(f"✅ Batch abgeschlossen: {len(df)} Zeilen")
