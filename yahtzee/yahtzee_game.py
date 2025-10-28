@@ -39,6 +39,13 @@ class YahtzeeGame:
             return score
         return None
 
+    def open_score(self):
+        simulated = {}
+        for category, func in self._score_functions().items():
+            if self.scorecard[category] is None:
+                simulated[category] = func(self.dice)
+        return simulated
+
     def calculate_upper_bonus(self):
         upper_keys = ["ones", "twos", "threes", "fours", "fives", "sixes"]
         upper_total = sum(self.scorecard[k] for k in upper_keys if self.scorecard[k] is not None)
