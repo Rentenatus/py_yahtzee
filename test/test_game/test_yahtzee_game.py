@@ -10,7 +10,7 @@ https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 import unittest
 
 from yahtzee.yahtzee_game import YahtzeeGame
-from yahtzee.yahtzee_player import AlwaysKeepPlayer
+from yahtzee.yahtzee_player import AlwaysKeepPlayer, ChaosPlayer
 from yahtzee.yahtzee_scheduler import Scheduler
 
 
@@ -24,6 +24,6 @@ class TestYahtzeeGame(unittest.TestCase):
 
 
     def test_scheduler(self):
-        players = [AlwaysKeepPlayer("GreedyBot"), AlwaysKeepPlayer("LazyBot")]
+        players = [AlwaysKeepPlayer("AlwaysKeepBot"), ChaosPlayer("ChaosBot")]
         scheduler = Scheduler(players)
         scheduler.start()
