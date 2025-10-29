@@ -61,6 +61,10 @@ class DiceTrainer(ABC):
         pass
 
     @abstractmethod
+    def predict_from_game(self, game: YahtzeeGame, roll_number: int):
+        pass
+
+    @abstractmethod
     def save_model(self, path):
        pass
 

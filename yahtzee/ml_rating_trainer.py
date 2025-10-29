@@ -53,6 +53,10 @@ class RatingTrainer(ABC):
         pass
 
     @abstractmethod
+    def predict_from_game(self, game: YahtzeeGame, simulated_scores: dict, roll_number: int):
+        pass
+
+    @abstractmethod
     def save_model(self, path):
        pass
 
@@ -90,8 +94,16 @@ class RatingTrainerRandomForest(RatingTrainer):
                   [f"score_{cat}_simulated" for cat in score_categories] + ["roll_number"]
 
         df = pd.DataFrame([x], columns=columns)
-        predicted_index = self.model.predict(df)[0]
-        return score_categories[predicted_index]
+        probas = self.model.predict_proba(df)[0]
+
+        # 🔒 Maskierung: Kategorien, die in simulated_scores None sind, bekommen -999
+        masked_probas = [
+            probas[i] if simulated_scores.get(cat) is not None else -999
+            for i, cat in enumerate(score_categories)
+        ]
+
+        best_index = masked_probas.index(max(masked_probas))
+        return score_categories[best_index]
 
     def save_model(self, path):
         import joblib
