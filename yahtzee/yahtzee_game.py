@@ -94,7 +94,9 @@ class YahtzeeGame:
         print(f"Total Score: {self.calculate_total_score()}")
         print("─" * 32)
 
-    def _score_functions(self):
+
+    @staticmethod
+    def _score_functions():
         return {
             "ones": lambda d: d.count(1) * 1,
             "twos": lambda d: d.count(2) * 2,
@@ -110,3 +112,8 @@ class YahtzeeGame:
             "yahtzee": lambda d: 50 if len(set(d)) == 1 else 0,
             "chance": lambda d: sum(d)
         }
+
+
+    @staticmethod
+    def score_categories():
+        return list(YahtzeeGame._score_functions().keys())

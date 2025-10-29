@@ -21,7 +21,7 @@ class TestYahtzeeGame(unittest.TestCase):
 
     def test_roll_and_score(self):
         print("First roll:", self.game.roll_dice())
-        for meth in self.game._score_functions().keys():
+        for meth in self.game.score_categories():
             self.game.score_category(meth)
         self.game.print_scorecard()
 

@@ -39,6 +39,11 @@ def main():
     players = [ChaosPlayer("ChaosBot"),AlwaysKeepPlayer("AlwaysKeepBot")]
     df = run_batch_games(players, logger_class=PandasLogger, num_games=1000)
 
+    if "total_score" in df.columns:
+        # Globaler Schwellenwert
+        threshold = df["total_score"].quantile(1 - 0.1)  # Top 10%
+        df = df[df["total_score"] >= threshold]
+
     print(f"✅ Batch abgeschlossen: {len(df)} Zeilen")
     print(df.head())
 
