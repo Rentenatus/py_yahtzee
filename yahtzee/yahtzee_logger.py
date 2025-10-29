@@ -28,7 +28,7 @@ class YahtzeeLogger(ABC):
         pass
 
     @abstractmethod
-    def log_category(self, category, score):
+    def log_category(self, open_scores, category, score):
         pass
 
     @abstractmethod
@@ -58,7 +58,7 @@ class TextLogger:
     def log_roll3(self, dice):
         self.text = f"{self.text}dice: {' '.join([str(die) for die in dice])}, "
 
-    def log_category(self, category, score):
+    def log_category(self, open_scores, category, score):
         print(self.text,category,score)
 
     def print_final_results(self):
@@ -80,7 +80,6 @@ class PandasLogger:
         self.current = {
             "player": player_name,
             "round": round_number + 1
-
         }
         for key, val in game.scorecard.items():
             self.current[f"score_{key}_before"] = val
@@ -89,17 +88,22 @@ class PandasLogger:
         for i in range(5):
             self.current[f"roll1_dice_{i + 1}"] = dice[i] if i < len(dice) else None
             self.current[f"roll1_stay_{i + 1}"] = stay[i] if i < len(stay) else None
+        self.current["roll_number"] = 1
 
     def log_roll2(self, dice, stay):
         for i in range(5):
             self.current[f"roll2_dice_{i + 1}"] = dice[i] if i < len(dice) else None
             self.current[f"roll2_stay_{i + 1}"] = stay[i] if i < len(stay) else None
+        self.current["roll_number"] = 2
 
     def log_roll3(self, dice):
         for i in range(5):
             self.current[f"roll3_dice_{i + 1}"] = dice[i] if i < len(dice) else None
+        self.current["roll_number"] = 3
 
-    def log_category(self, category, score):
+    def log_category(self, open_scores, category, score):
+        for key, val in open_scores.items():
+            self.current[f"score_{key}_simulated"] = val
         self.current["category"] = category
         self.current["score"] = score
         self.rows.append(self.current.copy())

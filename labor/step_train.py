@@ -10,6 +10,7 @@ https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+from yahtzee.ml_rating_trainer import RatingTrainerRandomForest
 from yahtzee.yahtzee_game import YahtzeeGame
 from yahtzee.ml_dice_trainer import DiceTrainerRandomForest
 
@@ -19,6 +20,11 @@ def main():
     df = pd.read_csv(filename)
     print(f"📁 Daten geladen aus {filename} mit {len(df)} Zeilen")
 
+    train_dice(df)
+    train_rating(df)
+
+
+def train_dice(df: pd.DataFrame):
     # 🔹 Schritt 2: Trainingsdaten extrahieren
     trainer = DiceTrainerRandomForest()
     x_data, y_data = trainer.extract_dice_training_data(df)
@@ -40,6 +46,31 @@ def main():
     # 🔹 Schritt 5: Modell speichern
     model_path = "assets/models/dice_model_rf.pkl"
     trainer.save_model(model_path)
+
+
+def train_rating(df: pd.DataFrame):
+    # 🔹 Schritt 2: Trainingsdaten extrahieren
+    trainer = RatingTrainerRandomForest()
+    x_data, y_data = trainer.extract_rating_training_data(df)
+
+    print(f"📊 Trainingsbeispiele: {len(x_data)}")
+    print(f"📐 Feature-Spalten: {list(x_data.columns)}")
+    print(f"🎯 Ziel-Spalten: {list(y_data.columns)}")
+
+    print(x_data.head())
+    print(y_data.head())
+
+    # 🔹 Schritt 3: Split & Training
+    x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.1, random_state=42)
+    trainer.train_model(x_train, y_train)
+
+    # 🔹 Schritt 4: Evaluation
+    trainer.evaluate_model(x_test, y_test)
+
+    # 🔹 Schritt 5: Modell speichern
+    model_path = "assets/models/rating_model_rf.pkl"
+    trainer.save_model(model_path)
+
 
 if __name__ == "__main__":
     main()

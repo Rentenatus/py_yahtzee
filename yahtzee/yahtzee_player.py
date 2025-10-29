@@ -53,9 +53,9 @@ class AlwaysKeepPlayer(Player):
     def choose_rating(self, game, roll_number):
         open_scores = game.open_score()
         if not open_scores:
-            return None
+            return open_scores, None
         # Choose category with highest potential score
-        return max(open_scores.items(), key=lambda x: x[1])[0]
+        return open_scores, max(open_scores.items(), key=lambda x: x[1])[0]
 
 
 
@@ -85,7 +85,7 @@ class ChaosPlayer(Player):
     def choose_rating(self, game, roll_number):
         open_scores = game.open_score()
         if not open_scores:
-            return None
+            return open_scores, None
 
         # Trenne obere und untere Kategorien
         upper = {"ones", "twos", "threes", "fours", "fives", "sixes"}
@@ -100,22 +100,22 @@ class ChaosPlayer(Player):
             if count >= 3:
                 category = self._upper_category(val)
                 if category and game.scorecard.get(category) is None:
-                    return category
+                    return open_scores, category
 
         # Finde beste untere Kategorie
         lower_scores = {k: v for k, v in open_scores.items() if k in lower}
         if lower_scores:
             best_lower = max(lower_scores.items(), key=lambda x: x[1])
             if best_lower[1] >= 8:
-                return best_lower[0]
+                return open_scores, best_lower[0]
 
         # Sonst: beste obere Kategorie
         upper_scores = {k: v for k, v in open_scores.items() if k in upper}
         if upper_scores:
-            return max(upper_scores.items(), key=lambda x: x[1])[0]
+            return open_scores, max(upper_scores.items(), key=lambda x: x[1])[0]
 
         # Fallback: beste Kategorie insgesamt
-        return max(open_scores.items(), key=lambda x: x[1])[0]
+        return open_scores, max(open_scores.items(), key=lambda x: x[1])[0]
 
     def _upper_category(self, value):
         mapping = {

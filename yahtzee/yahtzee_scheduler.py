@@ -28,9 +28,9 @@ class Scheduler:
                 stay = player.choose_dice(game, 1)
                 logger.log_roll1(game.dice, stay)
                 if len(stay) == 5:
-                    category = player.choose_rating(game, 1)
+                    open_scores, category = player.choose_rating(game, 1)
                     game.score_category(category)
-                    logger.log_category(category, game.scorecard[category])
+                    logger.log_category(open_scores, category, game.scorecard[category])
                     continue
 
                 # Roll 2
@@ -38,17 +38,17 @@ class Scheduler:
                 stay = player.choose_dice(game, 2)
                 logger.log_roll2(game.dice, stay)
                 if len(stay) == 5:
-                    category = player.choose_rating(game, 2)
+                    open_scores, category = player.choose_rating(game, 2)
                     game.score_category(category)
-                    logger.log_category(category, game.scorecard[category])
+                    logger.log_category(open_scores, category, game.scorecard[category])
                     continue
 
                 # Roll 3
                 game.reroll_dice(stay)
                 logger.log_roll3(game.dice)
-                category = player.choose_rating(game, 3)
+                open_scores, category = player.choose_rating(game, 3)
                 game.score_category(category)
-                logger.log_category(category, game.scorecard[category])
+                logger.log_category(open_scores, category, game.scorecard[category])
 
         # Final scorecards
         next(iter(self.loggers.values())).print_final_results()

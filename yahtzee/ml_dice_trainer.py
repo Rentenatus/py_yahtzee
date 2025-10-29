@@ -60,6 +60,14 @@ class DiceTrainer(ABC):
     def evaluate_model(self, x_data, y_data):
         pass
 
+    @abstractmethod
+    def save_model(self, path):
+       pass
+
+    @abstractmethod
+    def load_model(self, path):
+         pass
+
 class DiceTrainerRandomForest(DiceTrainer):
     def __init__(self):
         self.model = None
