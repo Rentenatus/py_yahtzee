@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
-
 from yahtzee.yahtzee_game import YahtzeeGame
+from sklearn.neural_network import MLPClassifier
+from sklearn.multioutput import MultiOutputClassifier
 
 
 class DiceTrainer(ABC):
@@ -14,6 +13,7 @@ class DiceTrainer(ABC):
     def extract_dice_training_data(df):
         features = []
         targets = []
+        weights = []
 
         score_categories = YahtzeeGame.score_categories()
 
@@ -35,14 +35,20 @@ class DiceTrainer(ABC):
                     try:
                         pos = dice_copy.index(w)
                         y[pos] = 1
-                        dice_copy[pos] = -99  # verhindert Duplikat-Erkennung
+                        dice_copy[pos] = -9966  # verhindert Duplikat-Erkennung
                     except ValueError:
                         pass  # falls Wert nicht mehr vorhanden ist
 
-                score_values = [row.get(f"score_{cat}_before", 0) for cat in score_categories]
+                score_values = [
+                    -9 if pd.isna(row.get(f"score_{cat}_before",-9)) else row.get(f"score_{cat}_before",-9)
+                    for cat in score_categories
+                ]
                 x = dice_values + score_values + [roll_number]
+                gradient = row.get("gradient_score", 1.0)  # Default: neutrale Lernstärke
+
                 features.append(x)
                 targets.append(y)
+                weights.append(gradient)
 
         x_columns = [f"dice_{i}" for i in range(1, 6)] + \
                     [f"score_{cat}_before" for cat in score_categories] + ["roll_number"]
@@ -50,10 +56,10 @@ class DiceTrainer(ABC):
 
         x_data = pd.DataFrame(features, columns=x_columns)
         y_data = pd.DataFrame(targets, columns=y_columns)
-        return x_data, y_data
+        return x_data, y_data, weights
 
     @abstractmethod
-    def train_model(self, x_data, y_data):
+    def train_model(self, x_data, y_data, w_train):
         pass
 
     @abstractmethod
@@ -76,7 +82,7 @@ class DiceTrainerRandomForest(DiceTrainer):
     def __init__(self):
         self.model = None
 
-    def train_model(self, x_data, y_data):
+    def train_model(self, x_data, y_data, w_train):
         base_model = RandomForestClassifier(n_estimators=100, random_state=42)
         self.model = MultiOutputClassifier(base_model)
         self.model.fit(x_data, y_data)
@@ -98,7 +104,12 @@ class DiceTrainerRandomForest(DiceTrainer):
         dice = game.dice  # z.B. [2, 5, 5, 1, 6]
 
         # Extrahiere Scorecard-Werte
-        score_features = [game.scorecard.get(cat, 0) for cat in YahtzeeGame.score_categories()]
+        score_features = [
+            -9 if pd.isna(game.scorecard.get(cat, -9)) else game.scorecard.get(cat, -9)
+            for cat in YahtzeeGame.score_categories()
+        ]
+
+
 
         # Kombiniere Features
         feature_vector = dice + score_features + [roll_number]
@@ -120,3 +131,60 @@ class DiceTrainerRandomForest(DiceTrainer):
         import joblib
         self.model = joblib.load(path)
         print(f"📂 Modell geladen aus {path}")
+
+
+
+class DiceTrainerNN(DiceTrainer):
+    def __init__(self):
+        self.model = None
+
+    def train_model(self, x_data, y_data, w_train):
+        base_model = MLPClassifier(
+            hidden_layer_sizes=(64, 32),
+            activation='relu',
+            solver='adam',
+            max_iter=500,
+            random_state=42
+        )
+        self.model = MultiOutputClassifier(base_model)
+        self.model.fit(x_data, y_data, sample_weight=w_train)
+        print("🧠 NN DiceModel erfolgreich trainiert")
+
+    def evaluate_model(self, x_test, y_test):
+        if self.model is None:
+            print("⚠️ Kein Modell vorhanden")
+            return
+        score = self.model.score(x_test, y_test)
+        print(f"📊 Genauigkeit: {score:.3f}")
+        return score
+
+    def predict_from_game(self, game: YahtzeeGame, roll_number: int):
+        if self.model is None:
+            raise ValueError("Modell ist nicht trainiert")
+
+        dice = game.dice
+        score_features = [game.scorecard.get(cat, -9) for cat in YahtzeeGame.score_categories()]
+        feature_vector = dice + score_features + [roll_number]
+
+        columns = [f"dice_{i}" for i in range(1, 6)] + \
+                  [f"score_{cat}_before" for cat in YahtzeeGame.score_categories()] + ["roll_number"]
+
+        df = pd.DataFrame([feature_vector], columns=columns)
+
+        # Optional: Schwellenwertlogik mit Wahrscheinlichkeiten
+        probas = self.model.predict_proba(df)
+        keep_flags = [
+            1 if probas[i][0][1] > 0.5 else 0  # Klasse 1 = „behalten“
+            for i in range(5)
+        ]
+        return keep_flags
+
+    def save_model(self, path):
+        import joblib
+        joblib.dump(self.model, path)
+        print(f"💾 NN-Modell gespeichert unter {path}")
+
+    def load_model(self, path):
+        import joblib
+        self.model = joblib.load(path)
+        print(f"📂 NN-Modell geladen aus {path}")
