@@ -24,11 +24,24 @@ from yahtzee.yahtzee_scheduler import Scheduler
 def main():
     model1_path = "assets/models/dice_model_rf.pkl"
     model2_path = "assets/models/rating_model_rf.pkl"
-    dice_model = DiceTrainerRandomForest()
-    dice_model.load_model(model1_path)
-    rating_model = RatingTrainerRandomForest()
-    rating_model.load_model(model2_path)
-    players = [ChaosPlayer("ChaosBot"), ModelPlayer("RandomForestBot",dice_model,rating_model) ]
+    dice_model_rf = DiceTrainerRandomForest()
+    dice_model_rf.load_model(model1_path)
+    rating_model_rf = RatingTrainerRandomForest()
+    rating_model_rf.load_model(model2_path)
+
+    model3_path = "assets/models/dice_model_nn.pkl"
+    model4_path = "assets/models/rating_model_nn.pkl"
+    dice_model_nn = DiceTrainerRandomForest()
+    dice_model_nn.load_model(model3_path)
+    rating_model_nn = RatingTrainerRandomForest()
+    rating_model_nn.load_model(model4_path)
+
+    players = [
+        ChaosPlayer("ChaosBot"),
+        ModelPlayer("RandomForestBot", dice_model_rf, rating_model_rf),
+        ModelPlayer("NeuralNetworkBot", dice_model_nn, rating_model_nn)
+    ]
+
     df = run_batch_games(players, logger_class=PandasLogger, num_games=1000)
 
     if "total_score" in df.columns:

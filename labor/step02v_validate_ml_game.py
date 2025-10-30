@@ -42,7 +42,6 @@ class TestYahtzeeGame(unittest.TestCase):
         rating_model_nn.load_model(model4_path)
 
         players = [
-            ChaosPlayer("ChaosBot"),
             ModelPlayer("RandomForestBot", dice_model_rf, rating_model_rf),
             ModelPlayer("NeuralNetworkBot", dice_model_nn, rating_model_nn)
         ]
