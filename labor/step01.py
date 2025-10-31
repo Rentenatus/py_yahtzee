@@ -37,7 +37,7 @@ def run_batch_games(players, logger_class, num_games=1000):
 
 def main():
     players = [ChaosPlayer("ChaosBot"),AlwaysKeepPlayer("AlwaysKeepBot")]
-    df = run_batch_games(players, logger_class=PandasLogger, num_games=28000)
+    df = run_batch_games(players, logger_class=PandasLogger, num_games=38000)
 
     if "total_score" in df.columns:
         # Globaler Schwellenwert

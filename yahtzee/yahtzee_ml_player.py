@@ -19,8 +19,7 @@ class ModelPlayer(Player):
         self.rating_model = rating_model
 
     def choose_dice(self, game: YahtzeeGame, roll_number: int):
-        prediction = self.dice_model.predict_from_game(game, roll_number)
-        return [game.dice[i] for i in range(5) if prediction[i] > 0.5]
+        return self.dice_model.predict_from_game(game, roll_number)
 
     def choose_rating(self, game: YahtzeeGame, roll_number: int):
         open_scores = game.open_score()

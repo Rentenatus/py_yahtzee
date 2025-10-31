@@ -9,8 +9,8 @@ https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 
 import unittest
 
-from yahtzee.ml_dice_trainer import DiceTrainerRandomForest
-from yahtzee.ml_rating_trainer import RatingTrainerRandomForest
+from yahtzee.ml_dice_trainer import DiceTrainerRandomForest, DiceTrainerNN
+from yahtzee.ml_rating_trainer import RatingTrainerRandomForest, RatingTrainerNN
 from yahtzee.yahtzee_game import YahtzeeGame
 from yahtzee.yahtzee_ml_player import ModelPlayer
 from yahtzee.yahtzee_player import AlwaysKeepPlayer, ChaosPlayer
@@ -36,9 +36,9 @@ class TestYahtzeeGame(unittest.TestCase):
 
         model3_path = "assets/models/dice_model_nn.pkl"
         model4_path = "assets/models/rating_model_nn.pkl"
-        dice_model_nn = DiceTrainerRandomForest()
+        dice_model_nn = DiceTrainerNN()
         dice_model_nn.load_model(model3_path)
-        rating_model_nn = RatingTrainerRandomForest()
+        rating_model_nn = RatingTrainerNN()
         rating_model_nn.load_model(model4_path)
 
         players = [

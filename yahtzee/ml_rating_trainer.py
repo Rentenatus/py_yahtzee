@@ -2,9 +2,11 @@ from abc import ABC, abstractmethod
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
+
+from yahtzee.ml_a_trainer import MlTrainer
 from yahtzee.yahtzee_game import YahtzeeGame
 
-class RatingTrainer(ABC):
+class RatingTrainer(MlTrainer):
 
     @staticmethod
     def extract_rating_training_data(df):
@@ -95,14 +97,6 @@ class RatingTrainer(ABC):
     @abstractmethod
     def predict_from_game(self, game: YahtzeeGame, simulated_scores: dict, roll_number: int):
         pass
-
-    @abstractmethod
-    def save_model(self, path):
-       pass
-
-    @abstractmethod
-    def load_model(self, path):
-         pass
 
 class RatingTrainerRandomForest(RatingTrainer):
     def __init__(self):

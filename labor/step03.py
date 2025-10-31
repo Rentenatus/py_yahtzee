@@ -10,8 +10,8 @@ https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 import pandas as pd
 
 from labor.step01 import run_batch_games
-from yahtzee.ml_dice_trainer import DiceTrainer, DiceTrainerRandomForest
-from yahtzee.ml_rating_trainer import RatingTrainer, RatingTrainerRandomForest
+from yahtzee.ml_dice_trainer import DiceTrainer, DiceTrainerRandomForest, DiceTrainerNN
+from yahtzee.ml_rating_trainer import RatingTrainer, RatingTrainerRandomForest, RatingTrainerNN
 from yahtzee.yahtzee_logger import PandasLogger
 from yahtzee.yahtzee_ml_player import ModelPlayer
 from yahtzee.yahtzee_player import ChaosPlayer, AlwaysKeepPlayer
@@ -31,9 +31,9 @@ def main():
 
     model3_path = "assets/models/dice_model_nn.pkl"
     model4_path = "assets/models/rating_model_nn.pkl"
-    dice_model_nn = DiceTrainerRandomForest()
+    dice_model_nn = DiceTrainerNN()
     dice_model_nn.load_model(model3_path)
-    rating_model_nn = RatingTrainerRandomForest()
+    rating_model_nn = RatingTrainerNN()
     rating_model_nn.load_model(model4_path)
 
     players = [
