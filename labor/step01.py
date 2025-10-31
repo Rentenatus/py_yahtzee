@@ -41,15 +41,23 @@ def main():
 
     if "total_score" in df.columns:
         # Globaler Schwellenwert
-        threshold = df["total_score"].quantile(1 - 0.1)  # Top 10%
-        df = df[df["total_score"] >= threshold]
+        threshold_good = df["total_score"].quantile(1 - 0.2)  # Top 20%
+        df_good = df[df["total_score"] >= threshold_good]
+        threshold_bad = df["total_score"].quantile(0.2)  # Bottom 20%
+        df_bad = df[df["total_score"] <= threshold_bad]
 
-    print(f"✅ Batch abgeschlossen: {len(df)} Zeilen")
-    print(df.head())
+        print(f"✅ Batch abgeschlossen: {len(df)} Zeilen")
+        print(df.head())
 
-    filename = "assets/yahtzee_training_data_01.csv"
-    df.to_csv(filename, index=False)
-    print(f"📁 Daten gespeichert unter {filename}")
+        filename = "assets/yahtzee_training_data_01.csv"
+        df_good.to_csv(filename, index=False)
+        print(f"📁 Top Daten gespeichert unter {filename}")
+        filename = "assets/yahtzee_training_data_02.csv"
+        df_bad.to_csv(filename, index=False)
+        print(f"📁 Bad Daten gespeichert unter {filename}")
+
+    else:
+        print("Colum total_score not found.")
 
 if __name__ == "__main__":
     main()
