@@ -4,7 +4,6 @@ Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materi
 terms of the Apache License v2.0 which accompanies this distribution, and is available at
 https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 </copyright>
-
 """
 
 import pandas as pd
@@ -39,6 +38,13 @@ def main():
     players = [ChaosPlayer("ChaosBot"),AlwaysKeepPlayer("AlwaysKeepBot")]
     df = run_batch_games(players, logger_class=PandasLogger, num_games=38000)
 
+    filename1 = "assets/yahtzee_training_data_01.csv"
+    filename2 = "assets/yahtzee_training_data_02.csv"
+
+    splitt_and_save(df, filename1, filename2)
+
+
+def splitt_and_save(df: pd.DataFrame, filename1: str, filename2: str):
     if "total_score" in df.columns:
         # Globaler Schwellenwert
         threshold_good = df["total_score"].quantile(1 - 0.2)  # Top 20%
@@ -49,15 +55,15 @@ def main():
         print(f"✅ Batch abgeschlossen: {len(df)} Zeilen")
         print(df.head())
 
-        filename = "assets/yahtzee_training_data_01.csv"
-        df_good.to_csv(filename, index=False)
-        print(f"📁 Top Daten gespeichert unter {filename}")
-        filename = "assets/yahtzee_training_data_02.csv"
-        df_bad.to_csv(filename, index=False)
-        print(f"📁 Bad Daten gespeichert unter {filename}")
+        df_good.to_csv(filename1, index=False)
+        print(f"📁 Top Daten gespeichert unter {filename1}")
+
+        df_bad.to_csv(filename2, index=False)
+        print(f"📁 Bad Daten gespeichert unter {filename2}")
 
     else:
         print("Colum total_score not found.")
+
 
 if __name__ == "__main__":
     main()

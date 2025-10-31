@@ -4,9 +4,7 @@ Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materi
 terms of the Apache License v2.0 which accompanies this distribution, and is available at
 https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 </copyright>
-
 """
-from typing import Any
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -26,6 +24,10 @@ def main():
     train_rating(df, RatingTrainerRandomForest(), "assets/models/rating_model_rf.pkl")
     train_rating(df, RatingTrainerNN(), "assets/models/rating_model_nn.pkl")
 
+    filename = "assets/yahtzee_training_data_02.csv"
+    df = pd.read_csv(filename)
+    print(f"📁 Daten geladen aus {filename} mit {len(df)} Zeilen")
+    train_dice(df, DiceTrainerNN(),"assets/models/dice_model_nnb.pkl")
 
 def train_dice(df: pd.DataFrame, trainer: DiceTrainer, model_path):
     # 🔹 Schritt 2: Trainingsdaten extrahieren

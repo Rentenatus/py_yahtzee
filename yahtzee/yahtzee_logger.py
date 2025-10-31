@@ -4,8 +4,8 @@ Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materi
 terms of the Apache License v2.0 which accompanies this distribution, and is available at
 https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 </copyright>
-
 """
+
 from abc import ABC, abstractmethod
 import pandas as pd
 from yahtzee.yahtzee_game import YahtzeeGame
@@ -116,7 +116,7 @@ class PandasLogger:
         lower_score = game.calculate_lower_score()
         upper_bonus = game.calculate_upper_bonus()
         total_score  = upper_score + lower_score + upper_bonus
-        gradient = total_score / 242  # Normalisierung für Lerngewicht
+        gradient = total_score / 142  # Normalisierung für Lerngewicht
         for row in self.rows:
             row["upper_score"] = upper_score
             row["lower_score"] = lower_score

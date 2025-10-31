@@ -1,4 +1,13 @@
-from abc import ABC, abstractmethod
+"""
+<copyright>
+Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+terms of the Apache License v2.0 which accompanies this distribution, and is available at
+https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
+</copyright>
+"""
+
+
+from abc import  abstractmethod
 from collections import Counter
 
 import pandas as pd
@@ -51,6 +60,7 @@ class DiceTrainer(MlTrainer):
                 ]
                 x = dice_values + counts + score_values + [roll_number]
                 gradient = row.get("gradient_score", 1.0)  # Default: neutrale Lernstärke
+                gradient = max(0.92, gradient)
                 if first_print >=0:
                     print(dice_values, stay_values, x , y)
                     first_print -= 1
@@ -125,7 +135,7 @@ class DiceTrainerRandomForest(DiceTrainer):
             raise ValueError("Modell ist nicht trainiert")
         extract_dice, df = self.extract_dice_predict_data(game, roll_number)
         prediction = self.model.predict(df)[0]
-        return [extract_dice[i] for i in range(5) if prediction[i] > 0.5]
+        return extract_dice, prediction
 
 
 
@@ -172,8 +182,8 @@ class DiceTrainerNN(DiceTrainer):
 
         # Optional: Schwellenwertlogik mit Wahrscheinlichkeiten
         probas = self.model.predict_proba(df)
-        keep_flags = [ probas[i][0][1]  for i in range(5) ]  # Wahrscheinlichkeit für Klasse '1' (Behalten)
-        return [extract_dice[i] for i in range(5) if keep_flags[i] > 0.5]
+        keep = [ probas[i][0][1]  for i in range(5) ]  # Wahrscheinlichkeit für Klasse '1' (Behalten)
+        return  extract_dice, keep
 
     def save_model(self, path):
         import joblib

@@ -4,7 +4,6 @@ Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materi
 terms of the Apache License v2.0 which accompanies this distribution, and is available at
 https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 </copyright>
-
 """
 
 import unittest
@@ -12,10 +11,30 @@ import unittest
 from yahtzee.ml_dice_trainer import DiceTrainerRandomForest, DiceTrainerNN
 from yahtzee.ml_rating_trainer import RatingTrainerRandomForest, RatingTrainerNN
 from yahtzee.yahtzee_game import YahtzeeGame
-from yahtzee.yahtzee_ml_player import ModelPlayer
-from yahtzee.yahtzee_player import AlwaysKeepPlayer, ChaosPlayer
+from yahtzee.yahtzee_ml_player import ModelPlayer, ModelDifferenzmPlayer
 from yahtzee.yahtzee_scheduler import Scheduler
 
+
+def reandom_forest_player() -> ModelPlayer:
+    model1_path = "assets/models/dice_model_rf.pkl"
+    model2_path = "assets/models/rating_model_rf.pkl"
+    dice_model_rf = DiceTrainerRandomForest()
+    dice_model_rf.load_model(model1_path)
+    rating_model_rf = RatingTrainerRandomForest()
+    rating_model_rf.load_model(model2_path)
+    return ModelPlayer("RandomForestBot", dice_model_rf, rating_model_rf)
+
+def nn_diff_player() -> ModelDifferenzmPlayer:
+    model3_path = "assets/models/dice_model_nn.pkl"
+    model3b_path = "assets/models/dice_model_nnb.pkl"
+    model4_path = "assets/models/rating_model_nn.pkl"
+    dice_model_nn = DiceTrainerNN()
+    dice_model_nn.load_model(model3_path)
+    dice_model_nnb = DiceTrainerNN()
+    dice_model_nnb.load_model(model3b_path)
+    rating_model_nn = RatingTrainerNN()
+    rating_model_nn.load_model(model4_path)
+    return ModelDifferenzmPlayer("NeuralNetworkBot", dice_model_nn, dice_model_nnb, rating_model_nn)
 
 class TestYahtzeeGame(unittest.TestCase):
     """
@@ -27,23 +46,13 @@ class TestYahtzeeGame(unittest.TestCase):
 
 
     def test_scheduler(self):
-        model1_path = "assets/models/dice_model_rf.pkl"
-        model2_path = "assets/models/rating_model_rf.pkl"
-        dice_model_rf = DiceTrainerRandomForest()
-        dice_model_rf.load_model(model1_path)
-        rating_model_rf = RatingTrainerRandomForest()
-        rating_model_rf.load_model(model2_path)
-
-        model3_path = "assets/models/dice_model_nn.pkl"
-        model4_path = "assets/models/rating_model_nn.pkl"
-        dice_model_nn = DiceTrainerNN()
-        dice_model_nn.load_model(model3_path)
-        rating_model_nn = RatingTrainerNN()
-        rating_model_nn.load_model(model4_path)
-
         players = [
-            ModelPlayer("RandomForestBot", dice_model_rf, rating_model_rf),
-            ModelPlayer("NeuralNetworkBot", dice_model_nn, rating_model_nn)
+            (reandom_forest_player()),
+            (nn_diff_player())
         ]
         scheduler = Scheduler(players)
         scheduler.start()
+
+
+
+

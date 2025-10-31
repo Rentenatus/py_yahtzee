@@ -4,7 +4,6 @@ Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materi
 terms of the Apache License v2.0 which accompanies this distribution, and is available at
 https://github.com/Rentenatus/py_yahtzee?tab=Apache-2.0-1-ov-file#readme
 </copyright>
-
 """
 
 from abc import ABC, abstractmethod
@@ -93,6 +92,10 @@ class ChaosPlayer(Player):
             "three_of_a_kind", "four_of_a_kind", "full_house",
             "small_straight", "large_straight", "yahtzee", "chance"
         }
+
+        # yahtzee zuerst:
+        if "yahtzee" in open_scores and open_scores["yahtzee"] == 50:
+            return open_scores, "yahtzee"
 
         # Priorität: mindestens drei gleiche → obere Kategorie
         counts = Counter(game.dice)
